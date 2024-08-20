@@ -1,5 +1,5 @@
 import { Romaji } from "./mod.js";
-import { hiraToRoma, table, tree } from "https://raw.githubusercontent.com/marmooo/hiraroma/main/mod.js";
+import { hiraToRoma, table, tree } from "npm:hiraroma@0.0.1";
 import { TextLineStream } from "jsr:@std/streams/text-line-stream";
 import { assertEquals } from "jsr:@std/assert/equals";
 
