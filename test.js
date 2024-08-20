@@ -1,7 +1,7 @@
-import { assertEquals } from "https://deno.land/std/assert/mod.ts";
-import { readLines } from "https://deno.land/std/io/mod.ts";
 import { Romaji } from "./mod.js";
 import { hiraToRoma, table, tree } from "https://raw.githubusercontent.com/marmooo/hiraroma/main/mod.js";
+import { TextLineStream } from "jsr:@std/streams/text-line-stream";
+import { assertEquals } from "jsr:@std/assert/equals";
 
 function kanaToHira(str) {
   return str.replace(/[ァ-ヶ]/g, (match) => {
@@ -18,15 +18,17 @@ const dicts = [
 
 async function testSudachi(dicts) {
   for (const dict of dicts) {
-    const fileReader = await Deno.open(dict);
-    for await (const line of readLines(fileReader)) {
+    const file = await Deno.open(dict);
+    const lineStream = file.readable
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(new TextLineStream());
+    for await (const line of lineStream) {
       const yomiKana = line.split(",")[11];
       if (!yomiKana.match(/^[ァ-ヶーゐゑ-]+$/)) continue;
       const yomiHira = kanaToHira(yomiKana);
       const yomi = yomiHira.replace(/-/g, "ー");
       testHira(yomi);
     }
-    fileReader.close();
   }
 }
 
